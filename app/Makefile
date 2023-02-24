@@ -1,5 +1,3 @@
-.DEFAULT_GOAL := build-run
-
 setup:
 	gradle wrapper --gradle-version 7.4
 
@@ -30,9 +28,5 @@ start:
 start-prod:
 	./gradlew bootRun --args='--spring.profiles.active=prod'
 
-build-run: build run
-
 check-updates:
 	./gradlew dependencyUpdates
-
-.PHONY: build

@@ -1,5 +1,3 @@
-.DEFAULT_GOAL := build-run
-
 setup:
 	make -C app setup
 
@@ -30,10 +28,5 @@ start:
 start-prod:
 	make -C app start-prod
 
-build-run:
-	make -C app build run
-
 check-updates:
 	make -C app check-updates
-
-.PHONY: build
