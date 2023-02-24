@@ -12,8 +12,8 @@ build:
 install:
 	make -C app install
 
-run:
-	make -C app run
+start-dist:
+	make -C app start-dist
 
 test:
 	make -C app test

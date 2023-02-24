@@ -12,8 +12,8 @@ build:
 install:
 	./gradlew clean installDist
 
-run:
-	./gradlew bootRun
+start-dist:
+	./build/install/app/bin/app
 
 test:
 	./gradlew test
