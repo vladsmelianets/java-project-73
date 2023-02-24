@@ -24,14 +24,11 @@ report:
 lint:
 	make -C app lint
 
-gen-migrations:
-	make -C app gen-migrations
-
 start:
 	make -C app start
 
-start-dist:
-	make -C app start-dist
+start-prod:
+	make -C app start-prod
 
 build-run:
 	make -C app build run

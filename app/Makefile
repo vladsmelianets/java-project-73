@@ -13,7 +13,7 @@ install:
 	./gradlew clean installDist
 
 run:
-	./gradlew run
+	./gradlew bootRun
 
 test:
 	./gradlew test
@@ -24,14 +24,11 @@ report:
 lint:
 	./gradlew checkstyleMain checkstyleTest
 
-gen-migrations:
-	./gradlew generateMigrations
-
 start:
-	APP_ENV=dev ./gradlew run
+	./gradlew bootRun --args='--spring.profiles.active=dev'
 
-start-dist:
-	APP_ENV=prod ./build/install/app/bin/app
+start-prod:
+	./gradlew bootRun --args='--spring.profiles.active=prod'
 
 build-run: build run
 
