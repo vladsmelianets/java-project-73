@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'checkstyle'
+    id 'com.adarshr.test-logger' version '3.2.0'
+    id 'jacoco'
+    id "com.github.ben-manes.versions" version '0.42.0'
+//    id 'org.liquibase.gradle' version '2.0.4'
+    id 'org.springframework.boot' version '3.0.2'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group 'hexlet.code'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.liquibase:liquibase-core'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//    runtimeOnly 'com.h2database:h2'
+//    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation 'org.springframework.security:spring-security-test'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+application {
+    mainClass = 'hexlet.code.AppApplication'
+}
+
+compileJava {
+    options.release = 17
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+    }
+}
+
+// modifying checkstyleMain to exclude generated sources from the checks
+checkstyleMain {
+    source = fileTree('src/main/java')
+}
+checkstyleMain.exclude('build/')
