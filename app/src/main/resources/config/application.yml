@@ -1,2 +1,14 @@
 server:
   port: ${PORT:5000}
+
+spring:
+  profiles:
+    default: dev
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.yml
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
