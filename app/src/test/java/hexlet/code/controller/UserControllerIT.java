@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -33,7 +34,7 @@ public class UserControllerIT {
     private String baseUrl;
 
     @Test
-    void testGetUsers() throws Exception {
+    void shouldRespondAllUsersJsonWhenGetUsers() throws Exception {
         MockHttpServletResponse response = mockMvc
                 .perform(get(baseUrl + "/users"))
                 .andReturn()
@@ -45,4 +46,22 @@ public class UserControllerIT {
         assertThat(response.getContentAsString()).contains("2", "Jack", "Doe", "doe@email.com");
     }
 
+    @Test
+    void shouldRespondUserJsonWhenGetExistentUserById() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(get(baseUrl + "/users/1"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
+        assertThat(response.getContentAsString()).contains("1", "John", "Smith", "smith@email.com");
+        assertThat(response.getContentAsString()).doesNotContain("Jack", "Doe", "doe@email.com");
+    }
+
+    @Test
+    void shouldRespondStatus404WhenGetNonExistentUserById() throws Exception {
+        mockMvc.perform(get(baseUrl + "/users/100"))
+                .andExpect(status().isNotFound());
+    }
 }

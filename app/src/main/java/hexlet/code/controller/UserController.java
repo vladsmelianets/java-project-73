@@ -1,11 +1,16 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.UserDto;
+import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,5 +31,12 @@ public final class UserController {
                 .stream()
                 .map(UserDto::new)
                 .toList();
+    }
+
+    @GetMapping("/{id}")
+    public UserDto getById(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
+        return new UserDto(user);
     }
 }
