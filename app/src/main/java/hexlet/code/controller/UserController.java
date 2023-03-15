@@ -1,6 +1,6 @@
 package hexlet.code.controller;
 
-import hexlet.code.model.User;
+import hexlet.code.dto.UserDto;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +12,19 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("${base-url}" + "/users")
-public class UserController {
+public final class UserController {
 
     UserRepository userRepository;
 
     @GetMapping
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<UserDto> getAll() {
+//        return userRepository.findAll()
+//                .stream()
+//                .map(User::toDto)
+//                .toList();
+        return userRepository.findAll()
+                .stream()
+                .map(UserDto::new)
+                .toList();
     }
 }

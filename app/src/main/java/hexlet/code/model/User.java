@@ -1,9 +1,9 @@
 package hexlet.code.model;
 
+import hexlet.code.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,11 +17,11 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "users")
-public class User {
+public final class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +38,14 @@ public class User {
     @CreationTimestamp
     @Column(nullable = false)
     private Instant createdAt;
+
+    public UserDto toDto() {
+        return new UserDto(
+                this.id,
+                this.firstName,
+                this.lastName,
+                this.email,
+                this.createdAt
+        );
+    }
 }

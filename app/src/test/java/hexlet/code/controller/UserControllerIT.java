@@ -40,11 +40,9 @@ public class UserControllerIT {
                 .getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
-        // Проверяем, что тип содержимого в ответе JSON
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        // Проверяем, что тело ответа содержит данные сущностей
-        assertThat(response.getContentAsString()).contains("John", "Smith");
-        assertThat(response.getContentAsString()).contains("Jack", "Doe");
+        assertThat(response.getContentAsString()).contains("1", "John", "Smith", "smith@email.com");
+        assertThat(response.getContentAsString()).contains("2", "Jack", "Doe", "doe@email.com");
     }
 
 }

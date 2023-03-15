@@ -30,3 +30,5 @@ start-prod:
 
 check-updates:
 	./gradlew dependencyUpdates
+
+.PHONY: build
