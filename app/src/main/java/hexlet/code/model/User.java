@@ -1,6 +1,5 @@
 package hexlet.code.model;
 
-import hexlet.code.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,14 +37,4 @@ public final class User {
     @CreationTimestamp
     @Column(nullable = false)
     private Instant createdAt;
-
-    public UserDto toDto() {
-        return new UserDto(
-                this.id,
-                this.firstName,
-                this.lastName,
-                this.email,
-                this.createdAt
-        );
-    }
 }
