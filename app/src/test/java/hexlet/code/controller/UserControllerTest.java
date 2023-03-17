@@ -82,21 +82,21 @@ public class UserControllerTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
         assertThat(response.getContentAsString()).contains("new firstname", "new lastname", "new@mail.com");
-        //TODO add db check
+        //TODO figure out appropriate tool for db check -> add db check
     }
 
-//    @Test
-//    void shouldRespondStatus422WhenPostNonValidUserJson() throws Exception {
-//        final File jsonFile = new ClassPathResource("non_valid_user.json").getFile();
-//        final String userToCreate = Files.readString(jsonFile.toPath());
-//
-//        MockHttpServletResponse response = mockMvc
-//                .perform(post(baseUrl + "/users")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(userToCreate))
-//                .andReturn()
-//                .getResponse();
-//
-//        assertThat(response.getStatus()).isEqualTo(422);
-//    }
+    @Test
+    void shouldRespondStatus422WhenPostNonValidUserJson() throws Exception {
+        final File jsonFile = new ClassPathResource("non_valid_user.json").getFile();
+        final String userToCreate = Files.readString(jsonFile.toPath());
+
+        MockHttpServletResponse response = mockMvc
+                .perform(post(baseUrl + "/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userToCreate))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(422);
+    }
 }
