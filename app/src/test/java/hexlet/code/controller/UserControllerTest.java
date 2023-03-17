@@ -7,9 +7,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
@@ -32,6 +34,9 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Value(value = "${base-url}")
     private String baseUrl;
 
@@ -42,10 +47,12 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        assertThat(response.getContentAsString()).contains("1", "John", "Smith", "smith@email.com");
-        assertThat(response.getContentAsString()).contains("2", "Jack", "Doe", "doe@email.com");
+        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(200);
+        assertThat(response.getContentType()).as("response body should be json")
+                .isEqualTo(MediaType.APPLICATION_JSON.toString());
+        assertThat(response.getContentAsString()).as("response body should contain all users")
+                .contains("1", "John", "Smith", "smith@email.com")
+                .contains("2", "Jack", "Doe", "doe@email.com");
     }
 
     @Test
@@ -55,10 +62,12 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        assertThat(response.getContentAsString()).contains("1", "John", "Smith", "smith@email.com");
-        assertThat(response.getContentAsString()).doesNotContain("Jack", "Doe", "doe@email.com");
+        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(200);
+        assertThat(response.getContentType()).as("response body should be json")
+                .isEqualTo(MediaType.APPLICATION_JSON.toString());
+        assertThat(response.getContentAsString()).as("response body should contain only requested user")
+                .contains("1", "John", "Smith", "smith@email.com")
+                .doesNotContain("Jack", "Doe", "doe@email.com");
     }
 
     @Test
@@ -71,6 +80,7 @@ public class UserControllerTest {
     void shouldCreateUserWhenPostValidUserJson() throws Exception {
         final File jsonFile = new ClassPathResource("valid_user.json").getFile();
         final String userToCreate = Files.readString(jsonFile.toPath());
+        int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
 
         MockHttpServletResponse response = mockMvc
                 .perform(post(baseUrl + "/users")
@@ -79,16 +89,22 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
-        assertThat(response.getContentAsString()).contains("new firstname", "new lastname", "new@mail.com");
-        //TODO figure out appropriate tool for db check -> add db check
+        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(200);
+        assertThat(response.getContentType()).as("response body should be json")
+                .isEqualTo(MediaType.APPLICATION_JSON.toString());
+        assertThat(response.getContentAsString()).as("response should contain new user")
+                .contains(TestData.VALID_FIRSTNAME, TestData.VALID_LASTNAME, TestData.VALID_EMAIL);
+
+        int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+        assertThat(usersCountAfterRequest).as("valid user should be added to database")
+                .isEqualTo(usersCountBeforeRequest + TestData.ONE);
     }
 
     @Test
     void shouldRespondStatus422WhenPostNonValidUserJson() throws Exception {
         final File jsonFile = new ClassPathResource("non_valid_user.json").getFile();
         final String userToCreate = Files.readString(jsonFile.toPath());
+        int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
 
         MockHttpServletResponse response = mockMvc
                 .perform(post(baseUrl + "/users")
@@ -97,6 +113,19 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(422);
+        assertThat(response.getStatus()).as("response status should be 422").isEqualTo(422);
+
+        int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+        assertThat(usersCountAfterRequest).as("non-valid user should not be added to database")
+                .isEqualTo(usersCountBeforeRequest);
+    }
+
+    interface TestData {
+
+        void suppressCheckstyle(); //TODO figure out how to suppress this f***ing checkstyle rule
+        int ONE = 1;
+        String VALID_FIRSTNAME = "valid firstname";
+        String VALID_LASTNAME = "valid lastname";
+        String VALID_EMAIL = "valid@email.com";
     }
 }
