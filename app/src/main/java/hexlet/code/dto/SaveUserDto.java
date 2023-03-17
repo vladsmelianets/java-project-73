@@ -6,26 +6,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public final class SaveUserDto {
 
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
+    @NotBlank
+    @Email
     private String email;
 
+    @NotBlank
+    @Size(min = 6, max = 100)
     private String password;
-
-    public SaveUserDto(User user) {
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-    }
 
     public User toModel() {
         User user = new User();
@@ -35,5 +38,4 @@ public final class SaveUserDto {
         user.setPassword(this.password);
         return user;
     }
-
 }

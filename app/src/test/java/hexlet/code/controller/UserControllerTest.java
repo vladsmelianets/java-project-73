@@ -26,10 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
-
-// TODO find out why script data.sql works only if executed manually
 @Sql("classpath:data.sql")
-public class UserControllerIT {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -70,8 +68,8 @@ public class UserControllerIT {
     }
 
     @Test
-    void shouldCreateUserWhenPostUserData() throws Exception {
-        final File jsonFile = new ClassPathResource("new-test-user.json").getFile();
+    void shouldCreateUserWhenPostValidUserJson() throws Exception {
+        final File jsonFile = new ClassPathResource("valid_user.json").getFile();
         final String userToCreate = Files.readString(jsonFile.toPath());
 
         MockHttpServletResponse response = mockMvc
@@ -84,5 +82,21 @@ public class UserControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
         assertThat(response.getContentAsString()).contains("new firstname", "new lastname", "new@mail.com");
+        //TODO add db check
     }
+
+//    @Test
+//    void shouldRespondStatus422WhenPostNonValidUserJson() throws Exception {
+//        final File jsonFile = new ClassPathResource("non_valid_user.json").getFile();
+//        final String userToCreate = Files.readString(jsonFile.toPath());
+//
+//        MockHttpServletResponse response = mockMvc
+//                .perform(post(baseUrl + "/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(userToCreate))
+//                .andReturn()
+//                .getResponse();
+//
+//        assertThat(response.getStatus()).isEqualTo(422);
+//    }
 }

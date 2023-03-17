@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDto {
+public class ShowUserDto {
 
     private long id;
 
@@ -24,12 +24,11 @@ public class UserDto {
 
     private Instant createdAt;
 
-    public UserDto(User user) {
+    public ShowUserDto(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.createdAt = user.getCreatedAt();
     }
-
 }

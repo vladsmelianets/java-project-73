@@ -1,14 +1,8 @@
-#base-url: /api
-
 spring:
   datasource:
     username: ""
     password: ""
     url: jdbc:h2:mem:db;DB_CLOSE_ON_EXIT=FALSE
-
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/changelog-master.yml
 
 logging:
   level:

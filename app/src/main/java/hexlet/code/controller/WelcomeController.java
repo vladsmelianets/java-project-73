@@ -10,5 +10,4 @@ public final class WelcomeController {
     String getWelcome() {
         return "Welcome to Spring";
     }
-
 }

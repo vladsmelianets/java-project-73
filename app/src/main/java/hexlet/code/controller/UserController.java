@@ -1,19 +1,18 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.SaveUserDto;
-import hexlet.code.dto.UserDto;
+import hexlet.code.dto.ShowUserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,27 +23,23 @@ public final class UserController {
     UserRepository userRepository;
 
     @GetMapping
-    public List<UserDto> getAll() {
-//        return userRepository.findAll()
-//                .stream()
-//                .map(User::toDto)
-//                .toList();
+    public List<ShowUserDto> getAll() {
         return userRepository.findAll()
                 .stream()
-                .map(UserDto::new)
+                .map(ShowUserDto::new)
                 .toList();
     }
 
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
-        return new UserDto(user);
+    public ShowUserDto getById(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return new ShowUserDto(user);
     }
 
     @PostMapping
-    public UserDto create(@RequestBody SaveUserDto saveUserDto) {
+    public ShowUserDto create(@RequestBody @Valid SaveUserDto saveUserDto) {
+        //TODO throw 422 if non-valid dto
         User createdUser = userRepository.save(saveUserDto.toModel());
-        return new UserDto(createdUser);
+        return new ShowUserDto(createdUser);
     }
 }
