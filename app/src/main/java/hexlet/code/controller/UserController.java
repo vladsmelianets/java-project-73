@@ -4,6 +4,7 @@ import hexlet.code.dto.SaveUserDto;
 import hexlet.code.dto.ShowUserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,9 @@ import java.util.List;
 @RequestMapping("${base-url}" + "/users")
 public final class UserController {
 
-    UserRepository userRepository;
+
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public List<ShowUserDto> getAll() {
@@ -38,8 +41,8 @@ public final class UserController {
 
     @PostMapping
     public ShowUserDto create(@RequestBody @Valid SaveUserDto saveUserDto) {
-        //TODO throw 422 if non-valid dto
-        User createdUser = userRepository.save(saveUserDto.toModel());
-        return new ShowUserDto(createdUser);
+//        User createdUser = userRepository.save(saveUserDto.toModel());
+//        return new ShowUserDto(createdUser);
+        return userService.createNew(saveUserDto);
     }
 }
