@@ -1,6 +1,5 @@
 package hexlet.code.dto;
 
-import hexlet.code.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
+//TODO find better name
 public class ShowUserDto {
 
     private long id;
@@ -23,12 +23,4 @@ public class ShowUserDto {
     private String email;
 
     private Instant createdAt;
-
-    public ShowUserDto(User user) {
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.createdAt = user.getCreatedAt();
-    }
 }

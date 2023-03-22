@@ -2,8 +2,6 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.SaveUserDto;
 import hexlet.code.dto.ShowUserDto;
-import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,28 +19,20 @@ import java.util.List;
 @RequestMapping("${base-url}" + "/users")
 public final class UserController {
 
-
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @GetMapping
     public List<ShowUserDto> getAll() {
-        return userRepository.findAll()
-                .stream()
-                .map(ShowUserDto::new)
-                .toList();
+        return userService.getAll();
     }
 
     @GetMapping("/{id}")
     public ShowUserDto getById(@PathVariable Long id) {
-        User user = userRepository.findById(id).orElseThrow();
-        return new ShowUserDto(user);
+        return userService.getById(id);
     }
 
     @PostMapping
     public ShowUserDto create(@RequestBody @Valid SaveUserDto saveUserDto) {
-//        User createdUser = userRepository.save(saveUserDto.toModel());
-//        return new ShowUserDto(createdUser);
         return userService.createNew(saveUserDto);
     }
 }

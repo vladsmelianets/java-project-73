@@ -1,6 +1,5 @@
 package hexlet.code.dto;
 
-import hexlet.code.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
+//TODO find better name
 public final class SaveUserDto {
 
     @NotBlank
@@ -29,13 +29,4 @@ public final class SaveUserDto {
     @NotBlank
     @Size(min = 6, max = 100)
     private String password;
-
-    public User toModel() {
-        User user = new User();
-        user.setFirstName(this.firstName);
-        user.setLastName(this.lastName);
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        return user;
-    }
 }

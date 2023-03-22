@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public final class BaseUserService implements UserService {
@@ -17,12 +19,26 @@ public final class BaseUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ShowUserDto createNew(SaveUserDto userDto) {
-        User createdUser = userRepository.save(dtoToModel(userDto));
-        return modelToDto(createdUser);
+    public List<ShowUserDto> getAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
-    private User dtoToModel(SaveUserDto saveUserDto) {
+    @Override
+    public ShowUserDto getById(Long id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return toDto(user);
+    }
+
+    @Override
+    public ShowUserDto createNew(SaveUserDto userDto) {
+        User createdUser = userRepository.save(toModel(userDto));
+        return toDto(createdUser);
+    }
+
+    private User toModel(SaveUserDto saveUserDto) {
         User user = new User();
         user.setFirstName(saveUserDto.getFirstName());
         user.setLastName(saveUserDto.getLastName());
@@ -31,7 +47,7 @@ public final class BaseUserService implements UserService {
         return user;
     }
 
-    private ShowUserDto modelToDto(User user) {
+    private ShowUserDto toDto(User user) {
         return new ShowUserDto(
                 user.getId(),
                 user.getFirstName(),
