@@ -36,9 +36,9 @@ public final class BaseUserService implements UserService {
     public UserDetailsDto update(Long id, UserToSaveDto userToSaveDto) {
         User userToUpdate = toModel(userToSaveDto);
         userToUpdate.setId(id);
+        encodePassword(userToUpdate);
         User existentUser = userRepository.findById(id).orElseThrow();
         userToUpdate.setCreatedAt(existentUser.getCreatedAt());
-        System.out.println("!!!!!! userToUpdate=" + userToUpdate);
         User updatedUser = userRepository.save(userToUpdate);
         return toDto(updatedUser);
     }
@@ -49,9 +49,15 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public UserDetailsDto createNew(UserToSaveDto userDto) {
-        User createdUser = userRepository.save(toModel(userDto));
+    public UserDetailsDto createNew(UserToSaveDto userToSaveDto) {
+        User userToCreate = toModel(userToSaveDto);
+        encodePassword(userToCreate);
+        User createdUser = userRepository.save(toModel(userToSaveDto));
         return toDto(createdUser);
+    }
+
+    private void encodePassword(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     private User toModel(UserToSaveDto userToSaveDto) {
@@ -59,7 +65,7 @@ public final class BaseUserService implements UserService {
         user.setFirstName(userToSaveDto.getFirstName());
         user.setLastName(userToSaveDto.getLastName());
         user.setEmail(userToSaveDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userToSaveDto.getPassword()));
+        user.setPassword(userToSaveDto.getPassword());
         return user;
     }
 
