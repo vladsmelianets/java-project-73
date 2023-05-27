@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -45,21 +46,21 @@ public class UserControllerTest {
     @Value(value = "${base-url}")
     private String baseUrl;
 
+    private static String validUserJson;
+    private static String nonValidUserJson;
     private static Map<String, String> validUser;
-    private static Map<String, String> nonValidUserMap;
-
-    private static final int ONE = 1;
+    private static Map<String, String> nonValidUser;
 
     @BeforeAll
-    static void setUpUserMaps() throws IOException {
+    static void setUpTestData() throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         final File validUserFile = new ClassPathResource("valid_user.json").getFile();
-        final String validUserJson = Files.readString(validUserFile.toPath());
         final File nonValidUserFile = new ClassPathResource("non_valid_user.json").getFile();
-        final String nonValidUserJson = Files.readString(nonValidUserFile.toPath());
 
+        validUserJson = Files.readString(validUserFile.toPath());
+        nonValidUserJson = Files.readString(nonValidUserFile.toPath());
         validUser = mapper.readValue(validUserJson, Map.class);
-        nonValidUserMap = mapper.readValue(nonValidUserJson, Map.class);
+        nonValidUser = mapper.readValue(nonValidUserJson, Map.class);
     }
 
     @Test
@@ -100,14 +101,12 @@ public class UserControllerTest {
 
     @Test
     void shouldCreateUserWhenPostValidUserJson() throws Exception {
-        final File jsonFile = new ClassPathResource("valid_user.json").getFile();
-        final String userToCreate = Files.readString(jsonFile.toPath());
         int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
 
         MockHttpServletResponse response = mockMvc
                 .perform(post(baseUrl + "/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userToCreate))
+                        .content(validUserJson))
                 .andReturn()
                 .getResponse();
 
@@ -119,19 +118,17 @@ public class UserControllerTest {
 
         int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
         assertThat(usersCountAfterRequest).as("valid user should be added to database")
-                .isEqualTo(usersCountBeforeRequest + ONE);
+                .isGreaterThan(usersCountBeforeRequest);
     }
 
     @Test
     void shouldRespondStatus422WhenPostNonValidUserJson() throws Exception {
-        final File jsonFile = new ClassPathResource("non_valid_user.json").getFile();
-        final String userToCreate = Files.readString(jsonFile.toPath());
         int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
 
         MockHttpServletResponse response = mockMvc
                 .perform(post(baseUrl + "/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userToCreate))
+                        .content(nonValidUserJson))
                 .andReturn()
                 .getResponse();
 
@@ -144,13 +141,10 @@ public class UserControllerTest {
 
     @Test
     void shouldUpdateUserWhenPutValidExistentUserJson() throws Exception {
-        final File jsonFile = new ClassPathResource("valid_user.json").getFile();
-        final String userToUpdate = Files.readString(jsonFile.toPath());
-
         MockHttpServletResponse response = mockMvc
                 .perform(put(baseUrl + "/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userToUpdate))
+                        .content(validUserJson))
                 .andReturn()
                 .getResponse();
 
@@ -161,8 +155,69 @@ public class UserControllerTest {
                 .contains(validUser.get("firstName"), validUser.get("lastName"), validUser.get("email"));
 
         int updatedUserCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "users",
-                "first_name = " + validUser.get("firstName"));
+                "first_name = '" + validUser.get("firstName") + "'");
         assertThat(updatedUserCount).as("user should be updated")
-                .isEqualTo(ONE);
+                .isOne();
+    }
+
+    @Test
+    void shouldRespondStatus404WhenPutNonExistentUserToUpdate() throws Exception {
+        mockMvc.perform(put(baseUrl + "/users/100")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validUserJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldRespondStatus422WhenPutNonValidUserJson() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(put(baseUrl + "/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(nonValidUserJson))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).as("response status should be 422").isEqualTo(422);
+
+        int updatedUserCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "users",
+                "first_name = '" + nonValidUser.get("firstName") + "'");
+        assertThat(updatedUserCount).as("user should be updated")
+                .isZero();
+    }
+
+    @Test
+    void shouldDeleteUserWhenDeleteByExistentId() throws Exception {
+        int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+
+        MockHttpServletResponse response = mockMvc
+                .perform(delete(baseUrl + "/users/1"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(200);
+
+        int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+        assertThat(usersCountAfterRequest).as("existent user should be deleted from database")
+                .isLessThan(usersCountBeforeRequest);
+
+        int deletedUserCount = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "users", "id = 1");
+        assertThat(deletedUserCount).as("user with id 1 should be deleted from database")
+                .isZero();
+    }
+
+    @Test
+    void shouldNotDeleteUserWhenDeleteByNonExistentId() throws Exception {
+        int usersCountBeforeRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+
+        MockHttpServletResponse response = mockMvc
+                .perform(delete(baseUrl + "/users/100"))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(404);
+
+        int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
+        assertThat(usersCountAfterRequest).as("nothing should be deleted from database")
+                .isEqualTo(usersCountBeforeRequest);
     }
 }

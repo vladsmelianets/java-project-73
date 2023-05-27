@@ -1,8 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.UserToSaveDto;
 import hexlet.code.dto.UserDetailsDto;
-import org.springframework.web.bind.annotation.PathVariable;
+import hexlet.code.dto.UserToSaveDto;
 
 import java.util.List;
 
@@ -11,5 +10,9 @@ public interface UserService {
 
     List<UserDetailsDto> getAll();
 
-    UserDetailsDto getById(@PathVariable Long id);
+    UserDetailsDto getById(Long id);
+
+    UserDetailsDto update(Long id, UserToSaveDto userToSaveDto);
+
+    void deleteById(Long id);
 }
