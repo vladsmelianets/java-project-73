@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.SaveUserDto;
-import hexlet.code.dto.ShowUserDto;
+import hexlet.code.dto.UserToSaveDto;
+import hexlet.code.dto.UserDetailsDto;
 import hexlet.code.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,17 +22,17 @@ public final class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<ShowUserDto> getAll() {
+    public List<UserDetailsDto> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ShowUserDto getById(@PathVariable Long id) {
+    public UserDetailsDto getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
     @PostMapping
-    public ShowUserDto create(@RequestBody @Valid SaveUserDto saveUserDto) {
-        return userService.createNew(saveUserDto);
+    public UserDetailsDto create(@RequestBody @Valid UserToSaveDto userToSaveDto) {
+        return userService.createNew(userToSaveDto);
     }
 }

@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.SaveUserDto;
-import hexlet.code.dto.ShowUserDto;
+import hexlet.code.dto.UserToSaveDto;
+import hexlet.code.dto.UserDetailsDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public final class BaseUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<ShowUserDto> getAll() {
+    public List<UserDetailsDto> getAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toDto)
@@ -27,28 +27,28 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public ShowUserDto getById(Long id) {
+    public UserDetailsDto getById(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         return toDto(user);
     }
 
     @Override
-    public ShowUserDto createNew(SaveUserDto userDto) {
+    public UserDetailsDto createNew(UserToSaveDto userDto) {
         User createdUser = userRepository.save(toModel(userDto));
         return toDto(createdUser);
     }
 
-    private User toModel(SaveUserDto saveUserDto) {
+    private User toModel(UserToSaveDto userToSaveDto) {
         User user = new User();
-        user.setFirstName(saveUserDto.getFirstName());
-        user.setLastName(saveUserDto.getLastName());
-        user.setEmail(saveUserDto.getEmail());
-        user.setPassword(passwordEncoder.encode(saveUserDto.getPassword()));
+        user.setFirstName(userToSaveDto.getFirstName());
+        user.setLastName(userToSaveDto.getLastName());
+        user.setEmail(userToSaveDto.getEmail());
+        user.setPassword(passwordEncoder.encode(userToSaveDto.getPassword()));
         return user;
     }
 
-    private ShowUserDto toDto(User user) {
-        return new ShowUserDto(
+    private UserDetailsDto toDto(User user) {
+        return new UserDetailsDto(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),

@@ -5,22 +5,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 //TODO find better name
-public class ShowUserDto {
+public final class UserToSaveDto {
 
-    private long id;
-
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
+    @NotBlank
+    @Email
     private String email;
 
-    private Instant createdAt;
+    @NotBlank
+    @Size(min = 6, max = 100)
+    private String password;
 }
