@@ -13,7 +13,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-//TODO find better name
 public final class UserToSaveDto {
 
     @NotBlank

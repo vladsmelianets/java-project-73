@@ -11,7 +11,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-//TODO find better name
 public class UserDetailsDto {
 
     private long id;
