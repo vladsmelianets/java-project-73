@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
@@ -45,6 +46,10 @@ public final class BaseUserService implements UserService {
 
     @Override
     public void deleteById(Long id) {
+        //TODO in SB3 deleteById no longer throws EmptyDataResult. Do we really need to notify user in this case?
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User doesn't exist");
+        }
         userRepository.deleteById(id);
     }
 

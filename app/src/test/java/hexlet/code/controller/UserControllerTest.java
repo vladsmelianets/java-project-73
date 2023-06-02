@@ -214,7 +214,7 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).as("response status should be 200/Ok").isEqualTo(404);
+        assertThat(response.getStatus()).as("response status should be 404").isEqualTo(404);
 
         int usersCountAfterRequest = JdbcTestUtils.countRowsInTable(jdbcTemplate, "users");
         assertThat(usersCountAfterRequest).as("nothing should be deleted from database")

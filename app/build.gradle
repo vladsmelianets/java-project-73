@@ -5,10 +5,9 @@ plugins {
     id 'com.adarshr.test-logger' version '3.2.0'
     id 'jacoco'
     id "com.github.ben-manes.versions" version '0.42.0'
-    id 'org.liquibase.gradle' version '2.0.4'
+    id 'org.liquibase.gradle' version '2.2.0'
 
-    //TODO consider upgrade to 3.0.2 and replace javax with jakarta
-    id 'org.springframework.boot' version '2.7.5'
+    id 'org.springframework.boot' version '3.0.7'
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
@@ -27,9 +26,10 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
 
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
     annotationProcessor 'org.projectlombok:lombok'
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     implementation(
             'org.springframework.boot:spring-boot-starter-data-jpa',
@@ -37,28 +37,29 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-actuator',
             'org.springframework.boot:spring-boot-starter-validation',
 //            'org.springframework.boot:spring-boot-starter-security',
-            'org.springframework.security:spring-security-crypto:6.0.2',
+            'org.springframework.security:spring-security-crypto:6.0.2', //TODO remove after activating security-starter
             'org.liquibase:liquibase-core',
     )
 
     runtimeOnly(
             'com.h2database:h2',
-            'org.postgresql:postgresql'
+            'org.postgresql:postgresql:42.6.0'
     )
 
     liquibaseRuntime(
             sourceSets.main.output,
             'org.liquibase:liquibase-core',
-            'org.liquibase.ext:liquibase-hibernate5:4.5.0',
-            'org.springframework.boot:spring-boot-starter-data-jpa'
+//            'info.picocli:picocli:4.7.1', //TODO research why it's in boilerplate
+            'org.liquibase.ext:liquibase-hibernate6:4.21.1',
+            'org.springframework.boot:spring-boot-starter-data-jpa',
+            'com.h2database:h2',
     )
 
-
     testImplementation(
-            'org.springframework.boot:spring-boot-starter-test',
+//            'org.springframework.boot:spring-boot-starter-security', //TODO do we really need this here?
 //            'org.springframework.security:spring-security-test',
-            'org.junit.jupiter:junit-jupiter-api:5.8.1',
-            'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+            'org.springframework.boot:spring-boot-starter-test',
+//            'com.tobedevoured.modelcitizen:spring:0.8.3'
     )
 }
 
@@ -79,7 +80,7 @@ jacocoTestReport {
     }
 }
 
-diffChangeLog {
+diffChangelog {
     dependsOn compileJava
 }
 
@@ -107,7 +108,7 @@ liquibase {
                     '?dialect=org.hibernate.dialect.H2Dialect' +
                     // Указываем правила именования таблиц и столбцов,
                     // чтобы они соответствовали правилам Spring
-                    '&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy'
+                    '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
         }
     }
 }
