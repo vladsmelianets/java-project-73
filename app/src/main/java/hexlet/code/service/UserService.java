@@ -1,18 +1,18 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.UserDetailsDto;
-import hexlet.code.dto.UserToSaveDto;
+import hexlet.code.dto.ShowUserDto;
+import hexlet.code.dto.SaveUserDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserDetailsDto createNew(UserToSaveDto userToSaveDto);
+    ShowUserDto createNew(SaveUserDto saveUserDto);
 
-    List<UserDetailsDto> getAll();
+    List<ShowUserDto> getAll();
 
-    UserDetailsDto getById(Long id);
+    ShowUserDto getById(Long id);
 
-    UserDetailsDto update(Long id, UserToSaveDto userToSaveDto);
+    ShowUserDto update(Long id, SaveUserDto saveUserDto);
 
     void deleteById(Long id);
 }

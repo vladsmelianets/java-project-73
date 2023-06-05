@@ -32,11 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
+//TODO remove addFilters for security tests
+//TODO consider to implement something of these for security tests:
+//https://spring.io/blog/2014/05/23/preview-spring-security-test-web-security
+@AutoConfigureMockMvc(addFilters = false)
 @Sql("classpath:data.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
 
+//TODO enable for security tests
+    //    @Autowired
+//    private WebApplicationContext context;
+
+    //TODO disable autowired for security tests
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,6 +70,15 @@ public class UserControllerTest {
         validUser = mapper.readValue(validUserJson, Map.class);
         nonValidUser = mapper.readValue(nonValidUserJson, Map.class);
     }
+
+//TODO enable for security tests
+//    @BeforeEach
+//    public void setupMockMvc() {
+//        mockMvc = MockMvcBuilders
+//                .webAppContextSetup(context)
+//                .apply(springSecurity())
+//                .build();
+//    }
 
     @Test
     void shouldRespondAllUsersJsonWhenGetUsers() throws Exception {

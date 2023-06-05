@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.UserDetailsDto;
-import hexlet.code.dto.UserToSaveDto;
+import hexlet.code.dto.SaveUserDto;
+import hexlet.code.dto.ShowUserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public final class BaseUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserDetailsDto> getAll() {
+    public List<ShowUserDto> getAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toDto)
@@ -28,16 +28,16 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public UserDetailsDto getById(Long id) {
+    public ShowUserDto getById(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         return toDto(user);
     }
 
     @Override
-    public UserDetailsDto update(Long id, UserToSaveDto userToSaveDto) {
-        User userToUpdate = toModel(userToSaveDto);
+    public ShowUserDto update(Long id, SaveUserDto saveUserDto) {
+        User userToUpdate = toModel(saveUserDto);
         userToUpdate.setId(id);
-        encodePassword(userToUpdate);
+        encodeUserPassword(userToUpdate);
         User existentUser = userRepository.findById(id).orElseThrow();
         userToUpdate.setCreatedAt(existentUser.getCreatedAt());
         User updatedUser = userRepository.save(userToUpdate);
@@ -54,28 +54,28 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public UserDetailsDto createNew(UserToSaveDto userToSaveDto) {
-        User userToCreate = toModel(userToSaveDto);
-        encodePassword(userToCreate);
-        User createdUser = userRepository.save(toModel(userToSaveDto));
+    public ShowUserDto createNew(SaveUserDto saveUserDto) {
+        User userToCreate = toModel(saveUserDto);
+        encodeUserPassword(userToCreate);
+        User createdUser = userRepository.save(userToCreate);
         return toDto(createdUser);
     }
 
-    private void encodePassword(User user) {
+    private void encodeUserPassword(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
-    private User toModel(UserToSaveDto userToSaveDto) {
+    private User toModel(SaveUserDto saveUserDto) {
         User user = new User();
-        user.setFirstName(userToSaveDto.getFirstName());
-        user.setLastName(userToSaveDto.getLastName());
-        user.setEmail(userToSaveDto.getEmail());
-        user.setPassword(userToSaveDto.getPassword());
+        user.setFirstName(saveUserDto.getFirstName());
+        user.setLastName(saveUserDto.getLastName());
+        user.setEmail(saveUserDto.getEmail());
+        user.setPassword(saveUserDto.getPassword());
         return user;
     }
 
-    private UserDetailsDto toDto(User user) {
-        return new UserDetailsDto(
+    private ShowUserDto toDto(User user) {
+        return new ShowUserDto(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),

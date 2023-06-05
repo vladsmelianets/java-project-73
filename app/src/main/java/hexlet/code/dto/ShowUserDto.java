@@ -11,7 +11,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDetailsDto {
+public class ShowUserDto {
 
     private long id;
 

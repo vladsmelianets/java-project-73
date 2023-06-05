@@ -36,8 +36,9 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-web',
             'org.springframework.boot:spring-boot-starter-actuator',
             'org.springframework.boot:spring-boot-starter-validation',
-//            'org.springframework.boot:spring-boot-starter-security',
-            'org.springframework.security:spring-security-crypto:6.0.2', //TODO remove after activating security-starter
+            'org.springframework.boot:spring-boot-starter-security',
+            'io.jsonwebtoken:jjwt:0.9.1',
+
             'org.liquibase:liquibase-core',
     )
 
@@ -57,9 +58,9 @@ dependencies {
 
     testImplementation(
 //            'org.springframework.boot:spring-boot-starter-security', //TODO do we really need this here?
-//            'org.springframework.security:spring-security-test',
-            'org.springframework.boot:spring-boot-starter-test',
-//            'com.tobedevoured.modelcitizen:spring:0.8.3'
+            'org.springframework.security:spring-security-test',
+            'org.springframework.boot:spring-boot-starter-test'
+//            , 'com.tobedevoured.modelcitizen:spring:0.8.3'
     )
 }
 
