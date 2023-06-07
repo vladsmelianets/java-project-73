@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.SaveUserDto;
-import hexlet.code.dto.ShowUserDto;
+import hexlet.code.dto.UserSaveDto;
+import hexlet.code.dto.UserShowDto;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -29,24 +29,24 @@ public class UserController {
             """;
 
     @GetMapping
-    public List<ShowUserDto> getAll() {
+    public List<UserShowDto> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ShowUserDto getById(@PathVariable Long id) {
+    public UserShowDto getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
     @PostMapping
-    public ShowUserDto create(@RequestBody @Valid SaveUserDto saveUserDto) {
-        return userService.createNew(saveUserDto);
+    public UserShowDto create(@RequestBody @Valid UserSaveDto userSaveDto) {
+        return userService.createNew(userSaveDto);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize(ACCOUNT_OWNER)
-    public ShowUserDto update(@PathVariable Long id, @RequestBody @Valid SaveUserDto saveUserDto) {
-        return userService.update(id, saveUserDto);
+    public UserShowDto update(@PathVariable Long id, @RequestBody @Valid UserSaveDto userSaveDto) {
+        return userService.update(id, userSaveDto);
     }
 
     @DeleteMapping("/{id}")

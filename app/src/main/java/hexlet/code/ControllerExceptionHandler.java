@@ -23,6 +23,7 @@ public final class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    //TODO filter msgs
     public List<ObjectError> validationExceptionsHandler(MethodArgumentNotValidException exception) {
         return exception.getAllErrors();
     }

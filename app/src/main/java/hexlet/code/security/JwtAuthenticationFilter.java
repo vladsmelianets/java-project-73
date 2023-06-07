@@ -1,7 +1,7 @@
 package hexlet.code.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.dto.AuthUserDto;
+import hexlet.code.dto.UserLoginDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(final HttpServletRequest request,
             final HttpServletResponse response) throws AuthenticationException {
         log.debug("TRYING TO LOGIN");
-        final AuthUserDto loginData = getLoginData(request);
+        final UserLoginDto loginData = getLoginData(request);
         log.debug("LOGIN DATA EXTRACTED: {}", loginData);
         final var authRequest = new UsernamePasswordAuthenticationToken(
                 loginData.getEmail(),
@@ -48,12 +48,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return getAuthenticationManager().authenticate(authRequest);
     }
 
-    private AuthUserDto getLoginData(final HttpServletRequest request) throws AuthenticationException {
+    private UserLoginDto getLoginData(final HttpServletRequest request) throws AuthenticationException {
         try {
             final String json = request.getReader()
                     .lines()
                     .collect(Collectors.joining());
-            return MAPPER.readValue(json, AuthUserDto.class);
+            return MAPPER.readValue(json, UserLoginDto.class);
         } catch (IOException e) {
             throw new BadCredentialsException("Can't extract login data from request");
         }

@@ -1,7 +1,7 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.SaveUserDto;
-import hexlet.code.dto.ShowUserDto;
+import hexlet.code.dto.UserSaveDto;
+import hexlet.code.dto.UserShowDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public final class BaseUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<ShowUserDto> getAll() {
+    public List<UserShowDto> getAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toDto)
@@ -28,14 +28,14 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public ShowUserDto getById(Long id) {
+    public UserShowDto getById(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         return toDto(user);
     }
 
     @Override
-    public ShowUserDto update(Long id, SaveUserDto saveUserDto) {
-        User userToUpdate = toModel(saveUserDto);
+    public UserShowDto update(Long id, UserSaveDto userSaveDto) {
+        User userToUpdate = toModel(userSaveDto);
         userToUpdate.setId(id);
         encodeUserPassword(userToUpdate);
         User existentUser = userRepository.findById(id).orElseThrow();
@@ -54,8 +54,8 @@ public final class BaseUserService implements UserService {
     }
 
     @Override
-    public ShowUserDto createNew(SaveUserDto saveUserDto) {
-        User userToCreate = toModel(saveUserDto);
+    public UserShowDto createNew(UserSaveDto userSaveDto) {
+        User userToCreate = toModel(userSaveDto);
         encodeUserPassword(userToCreate);
         User createdUser = userRepository.save(userToCreate);
         return toDto(createdUser);
@@ -65,17 +65,17 @@ public final class BaseUserService implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
-    private User toModel(SaveUserDto saveUserDto) {
+    private User toModel(UserSaveDto userSaveDto) {
         User user = new User();
-        user.setFirstName(saveUserDto.getFirstName());
-        user.setLastName(saveUserDto.getLastName());
-        user.setEmail(saveUserDto.getEmail());
-        user.setPassword(saveUserDto.getPassword());
+        user.setFirstName(userSaveDto.getFirstName());
+        user.setLastName(userSaveDto.getLastName());
+        user.setEmail(userSaveDto.getEmail());
+        user.setPassword(userSaveDto.getPassword());
         return user;
     }
 
-    private ShowUserDto toDto(User user) {
-        return new ShowUserDto(
+    private UserShowDto toDto(User user) {
+        return new UserShowDto(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
